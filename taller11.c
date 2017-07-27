@@ -8,9 +8,6 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-numero = rand() % 11;
-
-
 
 
 //Declaramos una estructura
@@ -51,14 +48,54 @@ void * funcion_hilo2(void *arg){
 
 }
 
+void hilo(int longitud, int cont, int num_hilo){
+	int ini = 0, fin = 0;
+	ini = num_hilo * cont;
+	fin = (num_hilo * cont) + (cont - 1);
+	if ((longitud - fin) < 0){
+		fin = longitud;
+	}
+	printf("inicio: %d - fin: %d\n", ini, fin);
+	for (int i = ini; i <= fin; ++i)
+	{
+		printf("Hilo numero %d tiene el elemento: %d\n", num_hilo, i);
+	}
+}
+
+int aleatorio(int min, int max){
+	return (rand() % (max - min + 1)) + min;
+}
 
 int main(int argc, char **argv){
+
+	//tmp
+	int longitud = 10, cont = 4;
+	//
 	
 	pthread_t id1, id2;		//aqui almacenamos los IDs de los hilos
 
 	int status;
 
+	//Crear arreglo
+	int *arreglo = malloc(5 * sizeof *arreglo);
+
+	//Llenar arreglo
+	for (int i = 0; i < 16; i++)
+	{
+		arreglo[i] = aleatorio(1, 10);
+		//printf("%d\n", arreglo[i]);
+	}
+
+	//Prueba inicio
+	//printf("%d - %d\n", argv[0][0], argv[0][0]);
+
 	
+	for (int i = 0; i < cont; ++i) //cont es el numero de hilos
+	{
+		hilo(longitud, cont, i); //longitud es el num de elementos, cont es la division
+	}
+	
+	//Prueba final
 	long argumento_entero = 50;
 	status = pthread_create(&id1, NULL, funcion_hilo1, (void *)argumento_entero);	//al hilo 1 le mandamos el argumento 50;
 
