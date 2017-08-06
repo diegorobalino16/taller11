@@ -102,6 +102,7 @@ int main(int argc, char **argv){
 	if (div > div_entero) cont = div_entero + 1;
 	else cont = div_entero;
 	printf("Entonces cada hilo tendrá: %d elementos.\n", cont);
+	//Fin de calcular cont
 
 	//Llenar arreglo
 	printf("Arreglo:\n");
@@ -110,9 +111,10 @@ int main(int argc, char **argv){
 		arreglo[i] = aleatorio(1, 9);
 		printf("%d: %d\n", i, arreglo[i]);
 	}
+	//Fin de llenar el arreglo
 	sleep(1);
 	
-	for (int i = 0; i < num_hilos; ++i) //cont es el numero de hilos
+	for (int i = 0; i < num_hilos; ++i) //cont es el numero de elementos por hilo
 	{
 		hilo(longitud, cont, i, arreglo); //longitud es el num de elementos
 	}
