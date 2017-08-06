@@ -31,9 +31,9 @@ void * funcion_hilo(void *arg){
 	int suma = 0;
 
 	for (int i = intervalo->inicio; i <= intervalo->final; i++){
-		printf("elemento: %d, suma: %d, i: %d\n", intervalo->arreglo[i], suma, i);
+		//printf("elemento: %d, suma: %d, i: %d\n", intervalo->arreglo[i], suma, i);
 		suma = intervalo->arreglo[i] + suma;
-		printf("Del %d al %d: %d\n\n", intervalo->inicio, intervalo->final, suma);
+		printf("Del %d al %d: %d\n", intervalo->inicio, intervalo->final, suma);
 	}
 	return (void *)0;		//tenemos que devolver algo
 }
@@ -45,7 +45,7 @@ void hilo(int longitud, int cont, int num_hilo, int *arreglo){
 	ini = num_hilo * cont;
 	fin = (num_hilo * cont) + (cont - 1);
 	if ((longitud - fin) < 0){
-		fin = longitud;
+		fin = longitud - 1;
 	}
 	//printf("inicio: %d - fin: %d\n", ini, fin);
 	Intervalos *intervalo = malloc(sizeof(Intervalos));
@@ -67,9 +67,9 @@ int aleatorio(int min, int max){
 int main(int argc, char **argv){
 
 	//tmp
-	int longitud = 16, cont = 4;
+	int longitud = 14, cont = 4;
 	//Crear arreglo
-	int *arreglo = malloc(5 * sizeof *arreglo);
+	int *arreglo = (int *) malloc(longitud * sizeof(*arreglo));
 
 	//Llenar arreglo
 	printf("Arreglo:\n");
@@ -83,11 +83,6 @@ int main(int argc, char **argv){
 	for (int i = 0; i < cont; ++i) //cont es el numero de hilos
 	{
 		hilo(longitud, cont, i, arreglo); //longitud es el num de elementos
-	}
-	
-	for (int i = 0; i < longitud; i++)
-	{
-		printf("%d: %d\n", i, arreglo[i]);
 	}
 	
 	sleep(3);
