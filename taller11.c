@@ -1,8 +1,3 @@
-/*
- * Autor: Ing. Eduardo Murillo
- */
-
-
 #include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -47,18 +42,20 @@ void * funcion_hilo(void *arg){
 	for (int i = intervalo->inicio; i <= intervalo->final; i++){
 		//printf("elemento: %d, suma: %d, i: %d\n", intervalo->arreglo[i], suma, i);
 		suma = intervalo->arreglo[i] + suma;
-		printf("Del %d al %d: %d\n", intervalo->inicio, intervalo->final, suma);
+		//printf("Del %d al %d: %d\n", intervalo->inicio, intervalo->final, suma);
 	}
 	time_fin = obtenerTiempoActual();
 	time_total = time_fin - time_ini;
 	printf("Tiempo: %lf - %lf = %lf\n", time_fin, time_ini, time_total);
+	//printf("Tiempo: %lf\n", time_total);
 	return (void *)0;		//tenemos que devolver algo
 }
 
 
-void hilo(int longitud, int cont, int num_hilo, int *arreglo){
+void hilo(int longitud, int cont, int num_hilo, int *arreglo, pthread_t *thread_id){
 	int ini = 0, fin = 0;
 	int status;
+
 	ini = num_hilo * cont;
 	fin = (num_hilo * cont) + (cont - 1);
 	if ((longitud - fin) < 0){
@@ -69,7 +66,7 @@ void hilo(int longitud, int cont, int num_hilo, int *arreglo){
 	intervalo->inicio = ini;
 	intervalo->final = fin;
 	intervalo->arreglo = arreglo;
-	status = pthread_create(&intervalo->thread_id, NULL, funcion_hilo, (void *)intervalo);	//al hilo 1 le mandamos el argumento 50;
+	status = pthread_create(&thread_id[num_hilo], NULL, funcion_hilo, (void *)intervalo);	//al hilo 1 le mandamos el argumento 50;
 	//sleep(1);
 	if(status < 0){
 		fprintf(stderr, "Error al crear el hilo 1\n");
@@ -83,11 +80,12 @@ int aleatorio(int min, int max){
 
 int main(int argc, char **argv){
 
-	//tmp
 	int cont;
+
 	//Crear arreglo
 	int longitud = atoi(argv[1]);
 	int num_hilos = atoi(argv[2]);
+	pthread_t *thread_id = (pthread_t *) malloc(num_hilos * sizeof(*thread_id));
 	//printf("%d, %d\n", longitud2, cont2);
 	int *arreglo = (int *) malloc(longitud * sizeof(*arreglo));
 
@@ -105,18 +103,25 @@ int main(int argc, char **argv){
 	//Fin de calcular cont
 
 	//Llenar arreglo
-	printf("Arreglo:\n");
+	//printf("Arreglo:\n");
 	for (int i = 0; i < longitud; i++)
 	{
 		arreglo[i] = aleatorio(1, 9);
-		printf("%d: %d\n", i, arreglo[i]);
+		//printf("%d: %d\n", i, arreglo[i]);
 	}
 	//Fin de llenar el arreglo
 	sleep(1);
 	
-	for (int i = 0; i < num_hilos; ++i) //cont es el numero de elementos por hilo
-	{
-		hilo(longitud, cont, i, arreglo); //longitud es el num de elementos
+	for (int i = 0; i < num_hilos; ++i){
+		hilo(longitud, cont, i, arreglo, thread_id); //longitud es el num de elementos
+	}
+	int status2;
+	for (int i = 0; i < num_hilos; ++i){
+		status2 = pthread_join(thread_id[i],NULL);
+		if (status2 < 0){
+			fprintf(stderr, "Error al esperar por el hilo %d\n", i);
+			exit(-1);
+		}
 	}
 	
 	sleep(1);
